@@ -55,9 +55,6 @@
 			<groupId>io.camunda.connector</groupId>
 			<artifactId>element-template-generator-core</artifactId>
 			<version>8.8.0</version>
-			<!-- Exclude all transitive Camunda connector libs — the runtime provides
-			     them at 8.9.x. We only need the annotation/DSL classes from this
-			     artifact itself (e.g. Property$FeelMode used in @TemplateProperty). -->
 			<exclusions>
 				<exclusion>
 					<groupId>io.camunda.connector</groupId>

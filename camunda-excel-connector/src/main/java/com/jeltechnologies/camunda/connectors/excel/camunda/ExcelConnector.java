@@ -12,8 +12,8 @@ import io.camunda.connector.generator.java.annotation.ElementTemplate;
   id = "io.camunda.excel-connector:1", 
   name = "Excel Connector", description = "Read Excel files",
   icon = "excel-connector.svg",
-  documentationRef = "https://your-docs-url.com",
-  version = 17, 
+  documentationRef = "https://github.com/jeltechnologies/camunda-excel-connector",
+  version = 20, 
   inputDataClass = ConnectorInput.class, propertyGroups = {
         @ElementTemplate.PropertyGroup(
                 id = "file", 

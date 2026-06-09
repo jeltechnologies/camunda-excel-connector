@@ -6,8 +6,8 @@
   "metadata" : {
     "keywords" : [ ]
   },
-  "documentationRef" : "https://your-docs-url.com",
-  "version" : 17,
+  "documentationRef" : "https://github.com/jeltechnologies/camunda-excel-connector",
+  "version" : 20,
   "category" : {
     "id" : "connectors",
     "name" : "Connectors"
@@ -61,11 +61,11 @@
     },
     "type" : "Dropdown",
     "choices" : [ {
-      "name" : "URL",
-      "value" : "URL"
-    }, {
       "name" : "Camunda Document Reference",
       "value" : "DOCUMENT"
+    }, {
+      "name" : "URL",
+      "value" : "URL"
     } ]
   }, {
     "id" : "fileURL",
@@ -305,7 +305,7 @@
     "id" : "version",
     "label" : "Version",
     "description" : "Version of the element template",
-    "value" : "17",
+    "value" : "20",
     "group" : "connector",
     "binding" : {
       "key" : "elementTemplateVersion",

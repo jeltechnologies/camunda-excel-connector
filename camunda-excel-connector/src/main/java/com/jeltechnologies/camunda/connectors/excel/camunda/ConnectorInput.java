@@ -20,10 +20,10 @@ enum Operation {
 }
 
 enum FileSource {
-    @DropdownItem(order = 1, label = "URL")
-    URL,
-    @DropdownItem(order = 2, label = "Camunda Document Reference")
-    DOCUMENT
+    @DropdownItem(order = 1, label = "Camunda Document Reference")
+    DOCUMENT,
+    @DropdownItem(order = 2, label = "URL")
+    URL
 }
 
 public record ConnectorInput(
