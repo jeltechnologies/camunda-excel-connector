@@ -1,0 +1,385 @@
+{
+  "$schema" : "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+  "name" : "Excel Connector",
+  "id" : "io.camunda.excel-connector:1",
+  "description" : "Read Excel files",
+  "metadata" : {
+    "keywords" : [ ]
+  },
+  "documentationRef" : "https://your-docs-url.com",
+  "version" : 17,
+  "category" : {
+    "id" : "connectors",
+    "name" : "Connectors"
+  },
+  "appliesTo" : [ "bpmn:Task" ],
+  "elementType" : {
+    "value" : "bpmn:ServiceTask"
+  },
+  "groups" : [ {
+    "id" : "file",
+    "label" : "File Settings"
+  }, {
+    "id" : "operation",
+    "label" : "Operation"
+  }, {
+    "id" : "output",
+    "label" : "Output Settings"
+  }, {
+    "id" : "connector",
+    "label" : "Connector"
+  }, {
+    "id" : "output",
+    "label" : "Output mapping"
+  }, {
+    "id" : "error",
+    "label" : "Error handling"
+  }, {
+    "id" : "retries",
+    "label" : "Retries"
+  } ],
+  "properties" : [ {
+    "value" : "io.camunda:excel:1",
+    "binding" : {
+      "property" : "type",
+      "type" : "zeebe:taskDefinition"
+    },
+    "type" : "Hidden"
+  }, {
+    "id" : "fileSource",
+    "label" : "File source",
+    "description" : "Where to load the Excel file from",
+    "optional" : false,
+    "value" : "URL",
+    "constraints" : {
+      "notEmpty" : true
+    },
+    "group" : "file",
+    "binding" : {
+      "name" : "fileSource",
+      "type" : "zeebe:input"
+    },
+    "type" : "Dropdown",
+    "choices" : [ {
+      "name" : "URL",
+      "value" : "URL"
+    }, {
+      "name" : "Camunda Document Reference",
+      "value" : "DOCUMENT"
+    } ]
+  }, {
+    "id" : "fileURL",
+    "label" : "File URL",
+    "description" : "URL of the Excel file to fetch (e.g. http://host/file.xlsx)",
+    "optional" : true,
+    "feel" : "optional",
+    "group" : "file",
+    "binding" : {
+      "name" : "fileURL",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "fileSource",
+      "equals" : "URL",
+      "type" : "simple"
+    },
+    "type" : "String"
+  }, {
+    "id" : "document",
+    "label" : "Document reference",
+    "description" : "FEEL expression resolving to a Camunda document (e.g. =myDocument)",
+    "optional" : true,
+    "feel" : "required",
+    "group" : "file",
+    "binding" : {
+      "name" : "document",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "fileSource",
+      "equals" : "DOCUMENT",
+      "type" : "simple"
+    },
+    "type" : "String"
+  }, {
+    "id" : "operation",
+    "label" : "Operation",
+    "description" : "Select the Excel operation to perform",
+    "optional" : false,
+    "value" : "getTableFromRange",
+    "constraints" : {
+      "notEmpty" : true
+    },
+    "group" : "operation",
+    "binding" : {
+      "name" : "operation",
+      "type" : "zeebe:input"
+    },
+    "type" : "Dropdown",
+    "choices" : [ {
+      "name" : "Get table, using first row as header",
+      "value" : "getTableFromRange"
+    }, {
+      "name" : "Get file contents",
+      "value" : "getFileContents"
+    }, {
+      "name" : "Get sheet contents",
+      "value" : "getSheetContents"
+    }, {
+      "name" : "Get cell by address",
+      "value" : "gellCellValueByAddress"
+    }, {
+      "name" : "Get cell by coordinates",
+      "value" : "getCellValueByCoordinates"
+    } ]
+  }, {
+    "id" : "workSheet",
+    "label" : "Sheet Name",
+    "description" : "Sheet name (leave empty to use the first sheet)",
+    "optional" : true,
+    "feel" : "optional",
+    "group" : "operation",
+    "binding" : {
+      "name" : "workSheet",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "operation",
+      "oneOf" : [ "gellCellValueByAddress", "getCellValueByCoordinates", "getSheetContents", "getTableFromRange" ],
+      "type" : "simple"
+    },
+    "type" : "String"
+  }, {
+    "id" : "cellAddress",
+    "label" : "Cell Address",
+    "description" : "Excel cell address, e.g. A1",
+    "optional" : false,
+    "feel" : "optional",
+    "group" : "operation",
+    "binding" : {
+      "name" : "cellAddress",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "operation",
+      "equals" : "gellCellValueByAddress",
+      "type" : "simple"
+    },
+    "type" : "String"
+  }, {
+    "id" : "cellRange",
+    "label" : "Range",
+    "description" : "Excel range, e.g. A1:E10.",
+    "optional" : false,
+    "constraints" : {
+      "notEmpty" : true
+    },
+    "feel" : "optional",
+    "group" : "operation",
+    "binding" : {
+      "name" : "cellRange",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "operation",
+      "equals" : "getTableFromRange",
+      "type" : "simple"
+    },
+    "type" : "String"
+  }, {
+    "id" : "column",
+    "label" : "Column",
+    "description" : "Column number (1-based)",
+    "optional" : false,
+    "feel" : "optional",
+    "group" : "operation",
+    "binding" : {
+      "name" : "column",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "operation",
+      "equals" : "getCellValueByCoordinates",
+      "type" : "simple"
+    },
+    "type" : "Number"
+  }, {
+    "id" : "row",
+    "label" : "Row",
+    "description" : "Row number (1-based)",
+    "optional" : false,
+    "feel" : "optional",
+    "group" : "operation",
+    "binding" : {
+      "name" : "row",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "operation",
+      "equals" : "getCellValueByCoordinates",
+      "type" : "simple"
+    },
+    "type" : "Number"
+  }, {
+    "id" : "includeCellDetails",
+    "label" : "Cell info",
+    "description" : "Include how much cell information should be exported",
+    "optional" : false,
+    "constraints" : {
+      "notEmpty" : true
+    },
+    "group" : "output",
+    "binding" : {
+      "name" : "includeCellDetails",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "operation",
+      "oneOf" : [ "gellCellValueByAddress", "getCellValueByCoordinates", "getSheetContents" ],
+      "type" : "simple"
+    },
+    "type" : "Dropdown",
+    "choices" : [ {
+      "name" : "Only values",
+      "value" : "VALUES"
+    }, {
+      "name" : "Values and cell address data",
+      "value" : "VALUES_AND_METADATA"
+    } ]
+  }, {
+    "id" : "handleEmptyCells",
+    "label" : "Handling of empty cells",
+    "description" : "Get all cells, or just cells with values",
+    "optional" : false,
+    "constraints" : {
+      "notEmpty" : true
+    },
+    "group" : "output",
+    "binding" : {
+      "name" : "handleEmptyCells",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "operation",
+      "oneOf" : [ "gellCellValueByAddress", "getCellValueByCoordinates", "getSheetContents" ],
+      "type" : "simple"
+    },
+    "type" : "Dropdown",
+    "choices" : [ {
+      "name" : "Returned as empty string",
+      "value" : "AS_EMPTY_STRINGS"
+    }, {
+      "name" : "Returned as null value",
+      "value" : "AS_NULL"
+    }, {
+      "name" : "Not returned",
+      "value" : "SKIP"
+    } ]
+  }, {
+    "id" : "handleEmptyRows",
+    "label" : "Row included",
+    "description" : "Get all rows, or just rows with values",
+    "optional" : false,
+    "constraints" : {
+      "notEmpty" : true
+    },
+    "group" : "output",
+    "binding" : {
+      "name" : "handleEmptyRows",
+      "type" : "zeebe:input"
+    },
+    "condition" : {
+      "property" : "operation",
+      "oneOf" : [ "gellCellValueByAddress", "getCellValueByCoordinates", "getSheetContents" ],
+      "type" : "simple"
+    },
+    "type" : "Dropdown",
+    "choices" : [ {
+      "name" : "Only rows that contain cells with values",
+      "value" : "SKIP"
+    }, {
+      "name" : "All rows",
+      "value" : "ALL"
+    } ]
+  }, {
+    "id" : "version",
+    "label" : "Version",
+    "description" : "Version of the element template",
+    "value" : "17",
+    "group" : "connector",
+    "binding" : {
+      "key" : "elementTemplateVersion",
+      "type" : "zeebe:taskHeader"
+    },
+    "type" : "Hidden"
+  }, {
+    "id" : "id",
+    "label" : "ID",
+    "description" : "ID of the element template",
+    "value" : "io.camunda.excel-connector:1",
+    "group" : "connector",
+    "binding" : {
+      "key" : "elementTemplateId",
+      "type" : "zeebe:taskHeader"
+    },
+    "type" : "Hidden"
+  }, {
+    "id" : "resultVariable",
+    "label" : "Result variable",
+    "description" : "Name of variable to store the response in",
+    "group" : "output",
+    "binding" : {
+      "key" : "resultVariable",
+      "type" : "zeebe:taskHeader"
+    },
+    "type" : "String"
+  }, {
+    "id" : "resultExpression",
+    "label" : "Result expression",
+    "description" : "Expression to map the response into process variables",
+    "feel" : "required",
+    "group" : "output",
+    "binding" : {
+      "key" : "resultExpression",
+      "type" : "zeebe:taskHeader"
+    },
+    "type" : "Text"
+  }, {
+    "id" : "errorExpression",
+    "label" : "Error expression",
+    "description" : "Expression to handle errors. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/\" target=\"_blank\">documentation</a>.",
+    "feel" : "required",
+    "group" : "error",
+    "binding" : {
+      "key" : "errorExpression",
+      "type" : "zeebe:taskHeader"
+    },
+    "type" : "Text"
+  }, {
+    "id" : "retryCount",
+    "label" : "Retries",
+    "description" : "Number of retries",
+    "value" : "3",
+    "feel" : "optional",
+    "group" : "retries",
+    "binding" : {
+      "property" : "retries",
+      "type" : "zeebe:taskDefinition"
+    },
+    "type" : "String"
+  }, {
+    "id" : "retryBackoff",
+    "label" : "Retry backoff",
+    "description" : "ISO-8601 duration to wait between retries",
+    "value" : "PT0S",
+    "group" : "retries",
+    "binding" : {
+      "key" : "retryBackoff",
+      "type" : "zeebe:taskHeader"
+    },
+    "type" : "String"
+  } ],
+  "icon" : {
+    "contents" : "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkgMTcuNUM5IDE1LjAxNDcgMTEuMDE0NyAxMyAxMy41IDEzSDM5VjM5QzM5IDQwLjY1NjkgMzcuNjU2OSA0MiAzNiA0MkgxNUMxMS42ODYzIDQyIDkgMzkuMzEzNyA5IDM2VjE3LjVaIiBmaWxsPSJ1cmwoI3BhaW50MF9yYWRpYWxfNzY3ODBfMTQ1NTMpIi8+CjxwYXRoIGQ9Ik05IDE3LjVDOSAxNS4wMTQ3IDExLjAxNDcgMTMgMTMuNSAxM0gzOVYzOUMzOSA0MC42NTY5IDM3LjY1NjkgNDIgMzYgNDJIMTVDMTEuNjg2MyA0MiA5IDM5LjMxMzcgOSAzNlYxNy41WiIgZmlsbD0idXJsKCNwYWludDFfcmFkaWFsXzc2NzgwXzE0NTUzKSIgZmlsbC1vcGFjaXR5PSIwLjciLz4KPHBhdGggZD0iTTkgMjIuNDk5OUM5IDIwLjAxNDcgMTEuMDE0NyAxNy45OTk5IDEzLjUgMTcuOTk5OUgyN0MyNS4zNDMxIDE3Ljk5OTkgMjQgMTkuMzQzMSAyNCAyMC45OTk5VjI2Ljk5OTlDMjQgMjguNjU2OCAyMi42NTY5IDI5Ljk5OTkgMjEgMjkuOTk5OUgxNUMxMS42ODYzIDI5Ljk5OTkgOSAzMi42ODYyIDkgMzUuOTk5OVYyMi40OTk5WiIgZmlsbD0idXJsKCNwYWludDJfbGluZWFyXzc2NzgwXzE0NTUzKSIvPgo8cGF0aCBkPSJNOSAyMi40OTk5QzkgMjAuMDE0NyAxMS4wMTQ3IDE3Ljk5OTkgMTMuNSAxNy45OTk5SDI3QzI1LjM0MzEgMTcuOTk5OSAyNCAxOS4zNDMxIDI0IDIwLjk5OTlWMjYuOTk5OUMyNCAyOC42NTY4IDIyLjY1NjkgMjkuOTk5OSAyMSAyOS45OTk5SDE1QzExLjY4NjMgMjkuOTk5OSA5IDMyLjY4NjIgOSAzNS45OTk5VjIyLjQ5OTlaIiBmaWxsPSJ1cmwoI3BhaW50M19saW5lYXJfNzY3ODBfMTQ1NTMpIiBmaWxsLW9wYWNpdHk9IjAuMyIvPgo8cGF0aCBkPSJNOSAxMkM5IDguNjg2MjkgMTEuNjg2MyA2IDE1IDZIMjdWMThIMTVDMTEuNjg2MyAxOCA5IDIwLjY4NjMgOSAyNFYxMloiIGZpbGw9InVybCgjcGFpbnQ0X2xpbmVhcl83Njc4MF8xNDU1MykiLz4KPHBhdGggZD0iTTkgMTJDOSA4LjY4NjI5IDExLjY4NjMgNiAxNSA2SDI3VjE4SDE1QzExLjY4NjMgMTggOSAyMC42ODYzIDkgMjRWMTJaIiBmaWxsPSJ1cmwoI3BhaW50NV9yYWRpYWxfNzY3ODBfMTQ1NTMpIi8+CjxwYXRoIGQ9Ik05IDEyQzkgOC42ODYyOSAxMS42ODYzIDYgMTUgNkgyN1YxOEgxNUMxMS42ODYzIDE4IDkgMjAuNjg2MyA5IDI0VjEyWiIgZmlsbD0idXJsKCNwYWludDZfbGluZWFyXzc2NzgwXzE0NTUzKSIvPgo8cmVjdCB3aWR0aD0iMTUiIGhlaWdodD0iMTIiIHJ4PSIzIiB0cmFuc2Zvcm09Im1hdHJpeCgtMSAwIDAgMSAzOSA2KSIgZmlsbD0idXJsKCNwYWludDdfcmFkaWFsXzc2NzgwXzE0NTUzKSIvPgo8cmVjdCB4PSI0IiB5PSIyMyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iMy4yNSIgZmlsbD0idXJsKCNwYWludDhfcmFkaWFsXzc2NzgwXzE0NTUzKSIvPgo8cmVjdCB4PSI0IiB5PSIyMyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iMy4yNSIgZmlsbD0idXJsKCNwYWludDlfcmFkaWFsXzc2NzgwXzE0NTUzKSIgZmlsbC1vcGFjaXR5PSIwLjMiLz4KPHBhdGggZD0iTTE2LjIwNTYgMzUuNTcxNEgxMy43MzkzTDEyLjE5MDcgMzIuNjU3N0MxMi4xMzU1IDMyLjU1NTcgMTIuMDkzIDMyLjQ3NDkgMTIuMDYzMyAzMi40MTU0QzEyLjAzNzggMzIuMzUxNyAxMi4wMTAyIDMyLjI3OTQgMTEuOTgwNCAzMi4xOTg3SDExLjk1NDlDMTEuOTE2NyAzMi4zMDA3IDExLjg4MDYgMzIuMzgzNiAxMS44NDY2IDMyLjQ0NzNDMTEuODEyNiAzMi41MTExIDExLjc3MjIgMzIuNTg5NyAxMS43MjU1IDMyLjY4MzJMMTAuMTE5NiAzNS41NzE0SDcuNzkzNTJMMTAuNTg0OCAzMC45OTM2TDcuOTg0NyAyNi40Mjg2SDEwLjQxOTFMMTEuNzk1NiAyOS4wMjk5QzExLjg1MDggMjkuMTM2MiAxMS44OTc2IDI5LjIyOTcgMTEuOTM1OCAyOS4zMTA0QzExLjk3ODMgMjkuMzg2OSAxMi4wMjA4IDI5LjQ3ODMgMTIuMDYzMyAyOS41ODQ2SDEyLjA4ODhDMTIuMTQ4MiAyOS40NjEzIDEyLjE5NSAyOS4zNjM2IDEyLjIyOSAyOS4yOTEzQzEyLjI2NzIgMjkuMjE5MSAxMi4zMTgyIDI5LjEyMzQgMTIuMzgxOSAyOS4wMDQ0TDEzLjgwOTQgMjYuNDI4NkgxNi4xMjkxTDEzLjQ5MDggMzAuOTIzNUwxNi4yMDU2IDM1LjU3MTRaIiBmaWxsPSJ3aGl0ZSIvPgo8ZGVmcz4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDBfcmFkaWFsXzc2NzgwXzE0NTUzIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDM5IDQ0LjQxNjcpIHJvdGF0ZSgtMTMzLjU0OSkgc2NhbGUoNDEuMTIzNiAzMS45MDgyKSI+CjxzdG9wIG9mZnNldD0iMC4wNjQ3MjMzIiBzdG9wLWNvbG9yPSIjMzc5NTM5Ii8+CjxzdG9wIG9mZnNldD0iMC40MjIxNDkiIHN0b3AtY29sb3I9IiMyOTdDMkQiLz4KPHN0b3Agb2Zmc2V0PSIwLjcwMzQ0OCIgc3RvcC1jb2xvcj0iIzE1NTYxQyIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50MV9yYWRpYWxfNzY3ODBfMTQ1NTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTguMTY2NyAyMy40NzIyKSByb3RhdGUoLTEzNS45NzEpIHNjYWxlKDE2LjY2MTEgMTIuODkwNikiPgo8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwNzNCMTAiLz4KPHN0b3Agb2Zmc2V0PSIwLjk5MjIzNCIgc3RvcC1jb2xvcj0iIzA4NEExMyIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQyX2xpbmVhcl83Njc4MF8xNDU1MyIgeDE9IjkiIHkxPSIyNi45OTk5IiB4Mj0iMjIuNzg0OCIgeTI9IjI2Ljk5OTkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTJEMTdDIi8+CjxzdG9wIG9mZnNldD0iMC4zMjg1MTIiIHN0b3AtY29sb3I9IiM0QUE2NDciLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDNfbGluZWFyXzc2NzgwXzE0NTUzIiB4MT0iMjIuNSIgeTE9IjE3Ljk5OTkiIHgyPSIyMi41IiB5Mj0iMzAuNTAyNyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMyOTg1MkYiLz4KPHN0b3Agb2Zmc2V0PSIwLjQ5OTk2OCIgc3RvcC1jb2xvcj0iIzRBQTY0NyIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQ0X2xpbmVhcl83Njc4MF8xNDU1MyIgeDE9IjkuNjYzMDEiIHkxPSIyMC41ODk1IiB4Mj0iMjYuMjk0NCIgeTI9IjYuMTY0ODMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNjZEMDUyIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzg1RTk3MiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50NV9yYWRpYWxfNzY3ODBfMTQ1NTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjYuMzUyIDEzLjY2MzQpIHJvdGF0ZSgtMTgwKSBzY2FsZSg5LjAxODgzIDE5LjA5NCkiPgo8c3RvcCBvZmZzZXQ9IjAuMjkyNDk1IiBzdG9wLWNvbG9yPSIjNEVCNDNCIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzcyQ0M2MSIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQ2X2xpbmVhcl83Njc4MF8xNDU1MyIgeDE9IjE3LjExNDciIHkxPSIxNC4zOTIzIiB4Mj0iOSIgeTI9IjE0LjM5MjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agb2Zmc2V0PSIwLjE4MzY5NCIgc3RvcC1jb2xvcj0iI0MwRTA3NSIgc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0QxRUI5NSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50N19yYWRpYWxfNzY3ODBfMTQ1NTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTEuOTEwOTQgMTMuNjc5NCkgcm90YXRlKC0zOC45Njk3KSBzY2FsZSgyMS43NTEgMjEuNjkwNCkiPgo8c3RvcCBvZmZzZXQ9IjAuNDM5OTgzIiBzdG9wLWNvbG9yPSIjNzlFOTZEIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0QwRUI3NiIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50OF9yYWRpYWxfNzY3ODBfMTQ1NTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoNCAyMykgcm90YXRlKDQ1KSBzY2FsZSgyMi42Mjc0IDY0LjQxNDEpIj4KPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjBBODVFIi8+CjxzdG9wIG9mZnNldD0iMC45NDM3NSIgc3RvcC1jb2xvcj0iIzA5NDQyQSIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50OV9yYWRpYWxfNzY3ODBfMTQ1NTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIgMzIuNikgcm90YXRlKDkwKSBzY2FsZSgxMS4yIDEyLjkpIj4KPHN0b3Agb2Zmc2V0PSIwLjU4MDM1NyIgc3RvcC1jb2xvcj0iIzMzQTY2MiIgc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMC45NzM4MDYiIHN0b3AtY29sb3I9IiM5OEYwQjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K"
+  }
+}

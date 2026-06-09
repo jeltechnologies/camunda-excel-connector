@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.0.5</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.jeltechnologies.camunda.connectors</groupId>
+	<artifactId>camunda-excel-connector</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>camunda-excel-connector</name>
+	<description />
+	<url />
+	<licenses>
+		<license />
+	</licenses>
+	<developers>
+		<developer />
+	</developers>
+	<scm>
+		<connection />
+		<developerConnection />
+		<tag />
+		<url />
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+	<dependencies>
+		<!-- Provided by the connector runtime — compile against but don't bundle -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.camunda.connector</groupId>
+			<artifactId>connector-core</artifactId>
+			<version>8.8.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.camunda.connector</groupId>
+			<artifactId>element-template-generator-core</artifactId>
+			<version>8.8.0</version>
+			<!-- Exclude all transitive Camunda connector libs — the runtime provides
+			     them at 8.9.x. We only need the annotation/DSL classes from this
+			     artifact itself (e.g. Property$FeelMode used in @TemplateProperty). -->
+			<exclusions>
+				<exclusion>
+					<groupId>io.camunda.connector</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>3.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Bundled — Apache POI is not in the connector runtime -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.4.1</version>
+		</dependency>
+
+		<!-- Provided by the connector runtime -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.19.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.19.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.19.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.19.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>2.19.2</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Keep spring-boot:run working but skip repackage — the connector
+			     runtime loads our JAR via classpath, not as a Spring Boot executable -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>repackage</id>
+						<goals><goal>repackage</goal></goals>
+						<configuration><skip>true</skip></configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Inherit shade config from spring-boot-starter-parent (already includes
+			     ServicesResourceTransformer and all Spring auto-config merging) -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<configuration>
+					<!-- We don't publish this artifact as a dependency, so the
+					     trimmed POM the shade plugin emits is just noise -->
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<!-- Run with -Pgenerate-templates to generate Camunda Modeler element templates -->
+		<profile>
+			<id>generate-templates</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.camunda.connector</groupId>
+						<artifactId>element-template-generator-maven-plugin</artifactId>
+						<version>8.8.0</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>generate-templates</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<outputDirectory>${project.basedir}/src/main/resources/element-templates</outputDirectory>
+							<connectors>
+								<connector>
+									<connectorClass>com.jeltechnologies.camunda.connectors.excel.camunda.ExcelConnector</connectorClass>
+								</connector>
+							</connectors>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>
