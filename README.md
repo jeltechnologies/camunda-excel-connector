@@ -1,7 +1,18 @@
 # Excel Connector for Camunda
  
 A Camunda connector that enables BPMN processes to read data directly from Excel files (.xlsx). Load spreadsheet data at runtime — from a URL or a Camunda Document Reference — and map the results into your process variables.
- 
+
+<img width="1616" height="948" alt="image" src="https://github.com/user-attachments/assets/dd402795-c62f-45c9-a848-bb7dc98d08e6" />
+Configure the connector in Camunda Modeler
+
+---
+
+
+<img width="1169" height="672" alt="image" src="https://github.com/user-attachments/assets/659ff80e-1d11-4530-a841-00d908f35901" />
+Excel file parsed into process instance variables
+
+---
+
 ## Features 
 - Load Excel files from a **public URL** or a **Camunda Document Reference**
 - Five read operations covering common Excel data access patterns
@@ -17,7 +28,6 @@ A Camunda connector that enables BPMN processes to read data directly from Excel
 | **Get sheet contents** | Returns all data from a specific sheet |
 | **Get cell by address** | Returns the value of a single cell by address (e.g. `A1`) |
 | **Get cell by coordinates** | Returns the value of a single cell by 1-based row and column numbers |
- 
 
 ## File Sources
 
