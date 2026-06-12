@@ -23,7 +23,7 @@ Excel file parsed into process instance variables
 ## Supported Operations
 | Operation | Description |
 |---|---|
-| **Get table from range** | This mimics how people normally use Excel, using it as a table with a for columns. Therefore this is **the most common way to use this Connector**. <br>The table is returned an array of JSON objects. Each object gets its attribute names from first row of the range.
+| **Get table from range** | This mimics how people normally use Excel; tables with a headers row. Therefore this is **the most common way to use this Connector**. <br>The table is returned an array of JSON objects. Each object gets its attribute names from first row of the range.
 | **Get file contents** | Returns the full contents of the Excel file |
 | **Get sheet contents** | Returns all data from a specific sheet (tab) |
 | **Get cell by address** | Returns the value of a single cell by address (e.g. `A1`) |
