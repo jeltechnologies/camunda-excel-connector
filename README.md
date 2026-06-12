@@ -1,6 +1,6 @@
 # Excel Connector for Camunda
  
-A Camunda connector that enables BPMN processes to read data directly from Excel files (.xlsx). Load spreadsheet data at runtime — from a URL or a Camunda Document Reference — and map the results into your process variables.
+A Camunda connector that enables BPMN processes to read data directly from Excel files (.xlsx). Load spreadsheet data at runtime — from a Camunda Document Reference — and map the results into your process variables.
 
 <img width="1616" height="948" alt="image" src="https://github.com/user-attachments/assets/dd402795-c62f-45c9-a848-bb7dc98d08e6" />
 Configure the connector in Camunda Modeler
@@ -23,9 +23,9 @@ Excel file parsed into process instance variables
 ## Supported Operations
 | Operation | Description |
 |---|---|
-| **Get table from range** | Reads a cell range and uses the first row as column headers, returning a list of objects |
+| **Get table from range** | This mimics how people normally use Excel, using it as a table with a for columns. Therefore this is **the most common way to use this Connector**. <br>The table is returned an array of JSON objects. Each object gets its attribute names from first row of the range.
 | **Get file contents** | Returns the full contents of the Excel file |
-| **Get sheet contents** | Returns all data from a specific sheet |
+| **Get sheet contents** | Returns all data from a specific sheet (tab) |
 | **Get cell by address** | Returns the value of a single cell by address (e.g. `A1`) |
 | **Get cell by coordinates** | Returns the value of a single cell by 1-based row and column numbers |
 
@@ -40,9 +40,9 @@ Excel file parsed into process instance variables
 
 | Setting | Options |
 |---------|---------|
-| **Cell info** | Values only · Values with address metadata |
-| **Empty cells** | Return as null · Return as empty string · Exclude |
-| **Empty rows** | Include all rows · Skip rows without values |
+| **Cell info** | Values only - only the contents <br>Values with address metadata - the contents and coordinates of each cell|
+| **Empty cells** | Return as null<br>Return as empty string<br>Exclude - skip empty cells |
+| **Empty rows** | Include all rows <br> Skip rows without values - Only rows that contain a value will generate a JSON row object |
 
 ## Cell value conversions
 
